@@ -20,6 +20,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author jumonji
+ *
+ */
 public class MainActivity extends Activity {
 	
 	private static final int REQUEST_PICK_CONTACT = 1;
