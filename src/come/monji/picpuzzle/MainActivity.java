@@ -1,12 +1,18 @@
 package come.monji.picpuzzle;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,9 +20,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -45,12 +48,19 @@ public class MainActivity extends Activity {
     }
     
     
-    public void onClick_open(View view){
+    public void onClick_open(View view) throws IOException{
 
     	// TODO
     	progressDialog = ProgressDialog.show(this, "", "読み込んでいます。");
+    	
+    	AssetManager assetManager = getResources().getAssets();
+    	InputStream is = assetManager.open("images/chiro.jpg");
+    	Bitmap bitmap = BitmapFactory.decodeStream(is);
+    	is.close();
+    	
 //        this.setBitmapToCanvas(Uri.parse("content://media/external/images/media/22"));
-        this.picView = this.setBitmapToCanvas(Uri.parse("content://media/external/images/media/1"));
+//        this.picView = this.setBitmapToCanvas(Uri.parse("content://media/external/images/media/1"));
+    	this.picView = this.setBitmapToCanvas(bitmap);
         progressDialog.dismiss();
         picView.invalidate();
         
@@ -124,19 +134,27 @@ public class MainActivity extends Activity {
         	return;
         }
         
-        this.setBitmapToCanvas(photoUri);
+        Bitmap bitmap = null;
+        try {
+			bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+        
+        this.setBitmapToCanvas(bitmap);
         
     }
     
     
-    private PicView setBitmapToCanvas(Uri photoUri){
+    private PicView setBitmapToCanvas(Bitmap bitmap){
 
     	PicView picView = null;
     	
-        // 画像を取得
     	try{
-    		// ビットマップ画像を取得
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
             LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
     		palet.removeAllViews();
     		
