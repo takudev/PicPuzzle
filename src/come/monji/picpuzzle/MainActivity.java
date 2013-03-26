@@ -2,7 +2,6 @@ package come.monji.picpuzzle;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,9 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,7 +22,7 @@ import android.widget.Toast;
 
 /**
  * 
- * @author jumonji
+ * @author takudev
  *
  */
 public class MainActivity extends Activity {
@@ -50,38 +47,11 @@ public class MainActivity extends Activity {
     
     public void onClick_open(View view) throws IOException{
 
-    	// TODO
     	progressDialog = ProgressDialog.show(this, "", "読み込んでいます。");
     	
-    	AssetManager assetManager = getResources().getAssets();
-    	InputStream is = assetManager.open("images/chiro.jpg");
-    	Bitmap bitmap = BitmapFactory.decodeStream(is);
-    	is.close();
-    	
-//        this.setBitmapToCanvas(Uri.parse("content://media/external/images/media/22"));
-//        this.picView = this.setBitmapToCanvas(Uri.parse("content://media/external/images/media/1"));
-    	this.picView = this.setBitmapToCanvas(bitmap);
-        progressDialog.dismiss();
-        picView.invalidate();
-        
-        
-//    	progressDialog = ProgressDialog.show(this, "", "読み込んでいます。");
-//    	
-//    	Intent intent = new Intent(Intent.ACTION_PICK);
-//    	intent.setType("image/*");
-//    	startActivityForResult(intent, REQUEST_PICK_CONTACT);
-        
-        
-        //-------------------------------
-        // 特定時間後にシャッフルを開始
-        //-------------------------------
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-//			@Override
-			public void run() {
-				picView.startPieceShuffle();
-			}
-		}, getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
+    	Intent intent = new Intent(Intent.ACTION_PICK);
+    	intent.setType("image/*");
+    	startActivityForResult(intent, REQUEST_PICK_CONTACT);
     }
 
     public void onClick_quit(View view){
@@ -111,6 +81,9 @@ public class MainActivity extends Activity {
     	
     }
     
+    /**
+     * @override
+     */
     public void onActivityResult (int requestCode, int resultCode, Intent intent){
     	super.onActivityResult(requestCode, resultCode, intent);
 
@@ -145,7 +118,19 @@ public class MainActivity extends Activity {
 			return;
 		}
         
-        this.setBitmapToCanvas(bitmap);
+    	this.picView = this.setBitmapToCanvas(bitmap);
+        picView.invalidate();
+
+        //-------------------------------
+        // 特定時間後にシャッフルを開始
+        //-------------------------------
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+//			@Override
+			public void run() {
+				picView.startPieceShuffle();
+			}
+		}, getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
         
     }
     
