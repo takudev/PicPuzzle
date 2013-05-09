@@ -58,7 +58,7 @@ public class PicViewManager {
 	private void initialize(){
 
 	    //------------------------
-	    // 分割した画像を保持
+	    // 画像を9分割
 	    //------------------------
 	    boxWidth = bitmap.getWidth() / 3;
 	    boxHeight = bitmap.getHeight() / 3;
@@ -75,7 +75,7 @@ public class PicViewManager {
 	    
 	    
 	    //------------------------
-	    // 分割した画像を配置(初期状態)
+	    // 正解の配置を保持しておく
 	    //------------------------
 	    correctPieceMap[0][0] = bitmap_x1_y1;
 	    correctPieceMap[1][0] = bitmap_x2_y1;
@@ -195,6 +195,7 @@ public class PicViewManager {
 	
 	public boolean isBlankBox(int targetIndex_x, int targetIndex_y){
 		
+		// パラメータの妥当性チェック
 		if(targetIndex_x < 0 ||
 			targetIndex_y < 0 ||
 			targetIndex_x >= correctPieceMap.length ||
