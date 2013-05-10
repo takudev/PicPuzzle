@@ -67,6 +67,24 @@ public class MainActivity extends Activity {
     	builder.create().show();
     }
 
+    public void onClick_start(View view){
+        //-------------------------------
+        // 特定時間後にシャッフルを開始
+        //-------------------------------
+        Toast.makeText(this, "シャッフルを開始します。", Toast.LENGTH_LONG).show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+			public void run() {
+				picView.startPieceShuffle();
+			}
+		}, getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
+    }
+
+    public void onClick_last(View view){
+
+    }
+
     public void onClick_save(View view){
 
     }
@@ -118,17 +136,6 @@ public class MainActivity extends Activity {
 
     	this.picView = this.setBitmapToCanvas(bitmap);
         picView.invalidate();
-
-        //-------------------------------
-        // 特定時間後にシャッフルを開始
-        //-------------------------------
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-			public void run() {
-				picView.startPieceShuffle();
-			}
-		}, getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
-
     }
 
 

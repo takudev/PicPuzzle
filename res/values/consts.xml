@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<integer name="WAIT_TIME_SHUFFLE_START">500</integer>
+<integer name="WAIT_TIME_SHUFFLE_START">3000</integer>
 <integer name="INITIAL_SHUFFLE_COUNT">15</integer>
 <integer name="INITIAL_SHUFFLE_TIME_ONE_BY_ONE">100</integer>
 </resources>
