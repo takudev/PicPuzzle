@@ -33,8 +33,10 @@ public class MainActivity extends Activity {
 
     int paletWidth = 380;
     int paletHeight = 450;
+    int cellSpacing = 2;
 
     private PicView picView;
+    private PicPreview picPreview;
 
 
     /** Called when the activity is first created. */
@@ -91,6 +93,16 @@ public class MainActivity extends Activity {
 
     public void onClick_preview(View view){
 
+    	LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
+    	Object object = palet.getChildAt(0);
+
+    	if (object instanceof PicView) {
+    		this.showPicView(picPreview);
+    	}
+    	else if (object instanceof PicPreview) {
+    		this.showPicView(picView);
+    	}
+
     }
 
     public void onClick_resume(View view){
@@ -134,24 +146,32 @@ public class MainActivity extends Activity {
 			return;
 		}
 
-    	this.picView = this.setBitmapToCanvas(bitmap);
+        PicViewManager picViewManager = this.createPicViewManager(bitmap);
+
+		picView = new PicView(this, picViewManager);
+		picPreview = new PicPreview(this, picViewManager);
+
+		this.showPicView(picView);
+
+        Log.d("TempLog", "PicView " + picView.getWidth() + ":" + picView.getHeight());
+    }
+
+    private void showPicView(View picView) {
+
+        LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
+		palet.removeAllViews();
+		palet.addView(picView);
         picView.invalidate();
     }
 
+    private PicViewManager createPicViewManager(Bitmap bitmap){
 
-    private PicView setBitmapToCanvas(Bitmap bitmap){
-
-    	PicView picView = null;
+		PicViewManager picViewManager = null;
 
     	try{
-            LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
-    		palet.removeAllViews();
-
-
     	    //------------------------
     	    // リサイズした画像を保持
     	    //------------------------
-    		PicViewManager picViewManager = null;
     		{
     		    double imageWidth = bitmap.getWidth();
     		    double imageHeight = bitmap.getHeight();
@@ -169,14 +189,9 @@ public class MainActivity extends Activity {
     		    }
 
     		    Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, Double.valueOf(imageWidth*rate).intValue(), Double.valueOf(imageHeight*rate).intValue(), true);
-    		    picViewManager = new PicViewManager(newBitmap, 2);
+    		    picViewManager = new PicViewManager(newBitmap, cellSpacing);
     		    Log.d("TempLog", "Bitmap " + newBitmap.getWidth() + ":" + newBitmap.getHeight());
     		}
-
-    		picView = new PicView(this, picViewManager);
-//    		picView.setBackgroundColor(Color.CYAN);
-    		palet.addView(picView);
-    		Log.d("TempLog", "PicView " + picView.getWidth() + ":" + picView.getHeight());
 
     	}
     	catch(Exception e){
@@ -184,7 +199,7 @@ public class MainActivity extends Activity {
     	}
 
 
-    	return picView;
+    	return picViewManager;
     }
 
     public void clear(){

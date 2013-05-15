@@ -26,14 +26,15 @@ public final class R {
     public static final class id {
         public static final int LinearLayout01=0x7f060005;
         public static final int button_last=0x7f060007;
+        public static final int button_preview=0x7f060008;
         public static final int button_start=0x7f060006;
         public static final int imageButton1=0x7f060001;
-        public static final int imageButton2=0x7f060009;
-        public static final int imageButton3=0x7f06000a;
-        public static final int imageButton4=0x7f06000b;
+        public static final int imageButton2=0x7f06000a;
+        public static final int imageButton3=0x7f06000b;
+        public static final int imageButton4=0x7f06000c;
         public static final int imageButton5=0x7f060002;
         public static final int imageView2=0x7f060004;
-        public static final int linearLayout2=0x7f060008;
+        public static final int linearLayout2=0x7f060009;
         public static final int linearLayout3=0x7f060000;
         public static final int linearLayout_palet=0x7f060003;
     }
