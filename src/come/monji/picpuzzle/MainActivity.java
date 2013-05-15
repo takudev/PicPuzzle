@@ -10,13 +10,18 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -74,6 +79,15 @@ public class MainActivity extends Activity {
         // 特定時間後にシャッフルを開始
         //-------------------------------
         Toast.makeText(this, "シャッフルを開始します。", Toast.LENGTH_LONG).show();
+
+        // フェードアウト
+    	AlphaAnimation alpha = new AlphaAnimation(1, 0);
+    	alpha.setDuration(3000);
+        LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
+        View currentPicView = palet.getChildAt(0);
+        currentPicView.startAnimation(alpha);
+
+        this.showPicView(this.picView);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -151,7 +165,7 @@ public class MainActivity extends Activity {
 		picView = new PicView(this, picViewManager);
 		picPreview = new PicPreview(this, picViewManager);
 
-		this.showPicView(picView);
+		this.showPicView(picPreview);
 
         Log.d("TempLog", "PicView " + picView.getWidth() + ":" + picView.getHeight());
     }
@@ -165,6 +179,13 @@ public class MainActivity extends Activity {
     }
 
     private PicViewManager createPicViewManager(Bitmap bitmap){
+
+    	WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
+    	// ディスプレイのインスタンス生成
+    	Display disp = wm.getDefaultDisplay();
+    	String width = "Width = " + disp.getWidth();
+    	String height = "Height = " + disp.getHeight();
+
 
 		PicViewManager picViewManager = null;
 
