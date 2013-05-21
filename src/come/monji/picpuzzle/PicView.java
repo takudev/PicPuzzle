@@ -176,6 +176,10 @@ public class PicView extends View{
 	}
 
 
+	public void moveJustBefore(){
+		picViewManager.moveJustBefore();
+	}
+
 	class MoveTimer extends Timer{
 
 		// 1枠移動する際に刻む数（多い値ほど滑らかだが、処理が重くなる。）

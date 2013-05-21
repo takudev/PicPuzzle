@@ -82,7 +82,7 @@ public class MainActivity extends Activity {
 
         // フェードアウト
     	AlphaAnimation alpha = new AlphaAnimation(1, 0);
-    	alpha.setDuration(3000);
+    	alpha.setDuration(getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
         LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
         View currentPicView = palet.getChildAt(0);
         currentPicView.startAnimation(alpha);
@@ -98,7 +98,8 @@ public class MainActivity extends Activity {
     }
 
     public void onClick_last(View view){
-
+    	picView.moveJustBefore();
+    	picView.invalidate();
     }
 
     public void onClick_save(View view){

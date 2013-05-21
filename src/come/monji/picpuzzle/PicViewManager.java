@@ -428,6 +428,7 @@ public class PicViewManager {
 
 		return true;
 	}
+
 	public Bitmap[][] getCurrentPieceMap(){
 		return currentPieceMap;
 	}
@@ -499,5 +500,23 @@ public class PicViewManager {
 
 	public int getTotalHeight(){
 		return boxHeight * 3 + cellSpacing * 2;
+	}
+
+	public void moveJustBefore(){
+
+		for(int x=0; x<correctPieceMap.length; x++){
+			for(int y=0; y<correctPieceMap[x].length; y++){
+
+				Bitmap bitmap = correctPieceMap[x][y];
+
+				if (x == 2 && y == 2) {
+					currentPieceMap[x][y] = null;
+				}
+				else{
+					currentPieceMap[x][y] = bitmap;
+					pieceRects.put(bitmap, new Rect(boxRects[x][y]));
+				}
+			}
+		}
 	}
 }
