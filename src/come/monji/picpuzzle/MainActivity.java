@@ -16,12 +16,13 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -36,19 +37,34 @@ public class MainActivity extends Activity {
 
 	private ProgressDialog progressDialog;
 
-    int paletWidth = 380;
-    int paletHeight = 450;
-    int cellSpacing = 2;
-
     private PicView picView;
     private PicPreview picPreview;
-
+    private Chronometer chronometer;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        chronometer = (Chronometer)findViewById(R.id.chronometer1);
+
+        Button buttonPreview = (Button)findViewById(R.id.button_preview);
+
+        buttonPreview.setOnTouchListener(new OnTouchListener() {
+
+			public boolean onTouch(View v, MotionEvent event) {
+
+				if(event.getAction() == MotionEvent.ACTION_DOWN){
+					MainActivity.this.showPicView(picPreview);
+				}
+				else if(event.getAction() == MotionEvent.ACTION_UP){
+					MainActivity.this.showPicView(picView);
+				}
+
+		    	return true;
+			}
+		});
     }
 
 
@@ -75,20 +91,17 @@ public class MainActivity extends Activity {
     }
 
     public void onClick_start(View view){
-        //-------------------------------
-        // 特定時間後にシャッフルを開始
-        //-------------------------------
+
         Toast.makeText(this, "シャッフルを開始します。", Toast.LENGTH_LONG).show();
 
         // フェードアウト
     	AlphaAnimation alpha = new AlphaAnimation(1, 0);
     	alpha.setDuration(getResources().getInteger(R.integer.WAIT_TIME_SHUFFLE_START));
-        LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
-        View currentPicView = palet.getChildAt(0);
-        currentPicView.startAnimation(alpha);
+    	picPreview.startAnimation(alpha);
 
         this.showPicView(this.picView);
 
+        // 特定時間後にシャッフルを開始
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
 			public void run() {
@@ -103,20 +116,6 @@ public class MainActivity extends Activity {
     }
 
     public void onClick_save(View view){
-
-    }
-
-    public void onClick_preview(View view){
-
-    	LinearLayout palet = (LinearLayout)findViewById(R.id.linearLayout_palet);
-    	Object object = palet.getChildAt(0);
-
-    	if (object instanceof PicView) {
-    		this.showPicView(picPreview);
-    	}
-    	else if (object instanceof PicPreview) {
-    		this.showPicView(picView);
-    	}
 
     }
 
@@ -161,14 +160,12 @@ public class MainActivity extends Activity {
 			return;
 		}
 
-        PicViewManager picViewManager = this.createPicViewManager(bitmap);
+        PicViewManager picViewManager = new PicViewManager(this, bitmap);
 
 		picView = new PicView(this, picViewManager);
 		picPreview = new PicPreview(this, picViewManager);
 
 		this.showPicView(picPreview);
-
-        Log.d("TempLog", "PicView " + picView.getWidth() + ":" + picView.getHeight());
     }
 
     private void showPicView(View picView) {
@@ -179,54 +176,14 @@ public class MainActivity extends Activity {
         picView.invalidate();
     }
 
-    private PicViewManager createPicViewManager(Bitmap bitmap){
 
-    	WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
-    	// ディスプレイのインスタンス生成
-    	Display disp = wm.getDefaultDisplay();
-    	String width = "Width = " + disp.getWidth();
-    	String height = "Height = " + disp.getHeight();
-
-
-		PicViewManager picViewManager = null;
-
-    	try{
-    	    //------------------------
-    	    // リサイズした画像を保持
-    	    //------------------------
-    		{
-    		    double imageWidth = bitmap.getWidth();
-    		    double imageHeight = bitmap.getHeight();
-
-    		    double rate = 1f;
-    		    if(imageWidth > paletWidth || imageHeight > paletHeight){
-    		    	// 縮小
-    		    	rate = Math.min(Integer.valueOf(paletWidth).doubleValue()/imageWidth,
-    		    					Integer.valueOf(paletHeight).doubleValue()/imageHeight);
-    		    }
-    		    else{
-    		    	// 拡大
-    		    	rate = Math.min(Integer.valueOf(paletWidth).doubleValue()/imageWidth,
-    		    					Integer.valueOf(paletHeight).doubleValue()/imageHeight);
-    		    }
-
-    		    Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, Double.valueOf(imageWidth*rate).intValue(), Double.valueOf(imageHeight*rate).intValue(), true);
-    		    picViewManager = new PicViewManager(newBitmap, cellSpacing);
-    		    Log.d("TempLog", "Bitmap " + newBitmap.getWidth() + ":" + newBitmap.getHeight());
-    		}
-
-    	}
-    	catch(Exception e){
-    		e.printStackTrace();
-    	}
-
-
-    	return picViewManager;
+    public void start(){
+    	chronometer.start();
     }
 
     public void clear(){
-    	Log.d("TempLog", "clear()");
     	Toast.makeText(this, "正解!", Toast.LENGTH_LONG).show();
+    	chronometer.stop();
     }
 
 }

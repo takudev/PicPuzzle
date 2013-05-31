@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 
@@ -91,14 +90,13 @@ public class PicView extends View{
 			return;
 		}
 
-
 		Point blankBoxIndex = picViewManager.getBlankBoxIndex();
 
 		for(Point key:movePointMap.keySet()){
 			if(key.equals(blankBoxIndex.x, blankBoxIndex.y)){
 				Point[] fromIndexs = movePointMap.get(key);
 
-				// 前回の移動で埋まった場所は移動の起点にしない（前回の移動で埋まった場所を動かした動きはUndo処理と同様）
+				// 前回の移動で埋まった場所は移動の起点にしないことで、Undoな移動を防ぐ。
 				if(prevBlankBoxIndex != null){
 					Point[] reviceFromIndexs = new Point[fromIndexs.length -1];
 					int insIndex = 0;

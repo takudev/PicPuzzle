@@ -26,7 +26,7 @@ public class PicPreview extends View{
 	@Override
 	protected void onDraw(Canvas canvas) {
 
-		canvas.drawBitmap(this.picViewManager.getBitmap(), 0, 0, new Paint());
+		canvas.drawBitmap(this.picViewManager.getResizedBitmap(), 0, 0, new Paint());
 
 	}
 }

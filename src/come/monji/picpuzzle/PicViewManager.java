@@ -6,10 +6,25 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class PicViewManager {
 
-	private Bitmap bitmap;
+    public static final int paletWidth = 380;
+    public static final int paletHeight = 450;
+    public static final int cellSpacing = 2;
+
+    private MainActivity activity;
+
+    private PicView picView;
+    private PicPreview picPreview;
+
+    // パズルをする画像
+	private Bitmap orgBitmap;
+
+	// パズルをする画像をパネルのサイズにリサイズしたもの
+	private Bitmap resizedBitmap;
 
 	// ボックスに対して正しいピース
 	private Bitmap[][] correctPieceMap = new Bitmap[3][3];
@@ -32,9 +47,6 @@ public class PicViewManager {
 	// 移動開始のため最初に触れた位置
 	private Point prevTouchPoint;
 
-	// ボックス間のマージン
-	private int cellSpacing;
-
 	private HashMap<Bitmap, Rect> pieceRects = new HashMap<Bitmap, Rect>();
 
 
@@ -42,13 +54,15 @@ public class PicViewManager {
 	 *
 	 * @param bitmap
 	 */
-	public PicViewManager(Bitmap bitmap, int cellSpacing){
+	public PicViewManager(MainActivity activity, Bitmap bitmap){
 
-		// ボックス間の間隔
-		this.cellSpacing = cellSpacing;
+		this.activity = activity;
 
 		// オリジナル画像を保持
-		this.bitmap = bitmap;
+		this.orgBitmap = bitmap;
+
+		// リサイズした画像を保持
+		this.resizedBitmap = resizedBitmap(bitmap);
 
 		// 画像を分割しサイズを計算
 		this.initialize();
@@ -60,18 +74,18 @@ public class PicViewManager {
 	    //------------------------
 	    // 画像を9分割
 	    //------------------------
-	    boxWidth = bitmap.getWidth() / 3;
-	    boxHeight = bitmap.getHeight() / 3;
+	    boxWidth = resizedBitmap.getWidth() / 3;
+	    boxHeight = resizedBitmap.getHeight() / 3;
 
-	    Bitmap bitmap_x1_y1 = Bitmap.createBitmap(bitmap, 0          + this.cellSpacing / 2, 0           + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x2_y1 = Bitmap.createBitmap(bitmap, boxWidth   + this.cellSpacing / 2, 0           + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x3_y1 = Bitmap.createBitmap(bitmap, boxWidth*2 + this.cellSpacing / 2, 0           + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x1_y2 = Bitmap.createBitmap(bitmap, 0          + this.cellSpacing / 2, boxHeight   + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x2_y2 = Bitmap.createBitmap(bitmap, boxWidth   + this.cellSpacing / 2, boxHeight   + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x3_y2 = Bitmap.createBitmap(bitmap, boxWidth*2 + this.cellSpacing / 2, boxHeight   + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x1_y3 = Bitmap.createBitmap(bitmap, 0          + this.cellSpacing / 2, boxHeight*2 + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x2_y3 = Bitmap.createBitmap(bitmap, boxWidth   + this.cellSpacing / 2, boxHeight*2 + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
-	    Bitmap bitmap_x3_y3 = Bitmap.createBitmap(bitmap, boxWidth*2 + this.cellSpacing / 2, boxHeight*2 + this.cellSpacing / 2, boxWidth - this.cellSpacing, boxHeight - this.cellSpacing);
+	    Bitmap bitmap_x1_y1 = Bitmap.createBitmap(resizedBitmap, 0          + cellSpacing / 2, 0           + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x2_y1 = Bitmap.createBitmap(resizedBitmap, boxWidth   + cellSpacing / 2, 0           + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x3_y1 = Bitmap.createBitmap(resizedBitmap, boxWidth*2 + cellSpacing / 2, 0           + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x1_y2 = Bitmap.createBitmap(resizedBitmap, 0          + cellSpacing / 2, boxHeight   + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x2_y2 = Bitmap.createBitmap(resizedBitmap, boxWidth   + cellSpacing / 2, boxHeight   + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x3_y2 = Bitmap.createBitmap(resizedBitmap, boxWidth*2 + cellSpacing / 2, boxHeight   + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x1_y3 = Bitmap.createBitmap(resizedBitmap, 0          + cellSpacing / 2, boxHeight*2 + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x2_y3 = Bitmap.createBitmap(resizedBitmap, boxWidth   + cellSpacing / 2, boxHeight*2 + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
+	    Bitmap bitmap_x3_y3 = Bitmap.createBitmap(resizedBitmap, boxWidth*2 + cellSpacing / 2, boxHeight*2 + cellSpacing / 2, boxWidth - cellSpacing, boxHeight - cellSpacing);
 
 
 	    //------------------------
@@ -133,16 +147,20 @@ public class PicViewManager {
 	    currentPieceMap[2][2] = null;
 	}
 
-	public Bitmap getBitmap() {
-		return bitmap;
+	public Bitmap getOrgBitmap() {
+		return orgBitmap;
+	}
+
+	public Bitmap getResizedBitmap() {
+		return resizedBitmap;
 	}
 
 	public Bitmap getCorrectBitmap(int x, int y) {
 		return correctPieceMap[x][y];
 	}
 
-	public void setBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
+	public void setOrgBitmap(Bitmap bitmap) {
+		this.orgBitmap = bitmap;
 		this.initialize();
 	}
 
@@ -519,4 +537,27 @@ public class PicViewManager {
 			}
 		}
 	}
+
+    private Bitmap resizedBitmap(Bitmap bitmap){
+
+
+    		    double imageWidth = bitmap.getWidth();
+    		    double imageHeight = bitmap.getHeight();
+
+    		    double rate = 1f;
+    		    if(imageWidth > paletWidth || imageHeight > paletHeight){
+    		    	// 縮小
+    		    	rate = Math.min(Integer.valueOf(paletWidth).doubleValue()/imageWidth,
+    		    					Integer.valueOf(paletHeight).doubleValue()/imageHeight);
+    		    }
+    		    else{
+    		    	// 拡大
+    		    	rate = Math.min(Integer.valueOf(paletWidth).doubleValue()/imageWidth,
+    		    					Integer.valueOf(paletHeight).doubleValue()/imageHeight);
+    		    }
+
+    		    Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, Double.valueOf(imageWidth*rate).intValue(), Double.valueOf(imageHeight*rate).intValue(), true);
+
+    		    return newBitmap;
+    }
 }

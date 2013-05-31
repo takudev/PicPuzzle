@@ -30,7 +30,8 @@
             android:id="@+id/chronometer1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chronometer" />
+            android:text="Chronometer"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
@@ -67,7 +68,6 @@
             android:id="@+id/button_preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onClick_preview"
             android:text="Preview" />
 
     </LinearLayout>
